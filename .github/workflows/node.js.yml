@@ -73,7 +73,7 @@ jobs:
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   sonar-backend:
     runs-on: Agent-1
@@ -93,4 +93,4 @@ jobs:
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}

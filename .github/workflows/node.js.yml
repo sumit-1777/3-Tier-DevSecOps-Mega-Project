@@ -28,7 +28,7 @@ jobs:
             cd api
             find . -name "*.js" -exec node --check {} +   
             
- gitleaks-scan:
+  gitleaks-scan:
    runs-on: Agent-1
    needs: compile
 

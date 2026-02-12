@@ -38,10 +38,10 @@ gitleaks-scan:
      - name: checkout code
        uses: actions/checkout@v4
       
-     - name: Gitleack setup
-       uses: gitleacks/gitleack-action@v2
+     - name: Gitleak setup
+       uses: gitleaks/gitleack-action@v2
      - name: Gitleack Scan
        run: 
-        gitleack detect --source ./client --exit-code 1
-        gitleack detect --source ./api --exit-code 1
+        gitleak detect --source ./client --exit-code 1
+        gitleak detect --source ./api --exit-code 1
        

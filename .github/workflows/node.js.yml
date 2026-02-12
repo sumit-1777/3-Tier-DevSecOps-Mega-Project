@@ -9,53 +9,88 @@ on:
 jobs:
   compile:
     runs-on: Agent-1
-      
     steps:
-      - name: checkout code 
+      - name: Checkout code
         uses: actions/checkout@v4
-    
-      - name: set up Node.js
+
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-         node-version: '23'
-         
-      - name: frontend compilation
+          node-version: '23'
+
+      - name: Frontend compilation
         run: |
-            cd client
-            find . -name "*.js" -exec node --check {} +
+          cd client
+          find . -name "*.js" -exec node --check {} +
+
       - name: Backend compilation
         run: |
-            cd api
-            find . -name "*.js" -exec node --check {} +   
-            
-  gitleaks-scan:
-   runs-on: Agent-1
-   needs: compile
+          cd api
+          find . -name "*.js" -exec node --check {} +
 
-   steps:
-     - name: checkout code
-       uses: actions/checkout@v4
-      
-     - name: Gitleak setup
-       uses: gitleaks/gitleaks-action@v2
-     - name: Gitleak Scan
-       run: 
-        gitleaks detect --source ./client --exit-code 1
-        gitleaks detect --source ./api --exit-code 1
+  gitleaks-scan:
+    runs-on: Agent-1
+    needs: compile
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run Gitleaks Scan
+        uses: gitleaks/gitleaks-action@v2
 
   trivy_fs_scan:
-     runs-on: Agent-1
-     needs: gitleaks-scan
-     steps:
-     - name: Checkout code
-       uses: actions/checkout@v4
+    runs-on: Agent-1
+    needs: gitleaks-scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-     - name: Run Trivy vulnerability scanner in fs mode
-       uses: aquasecurity/trivy-action@0.33.1
-       with:
-         scan-type: 'fs'
-         scan-ref: '.'
-         format: 'table'
-         ignore-unfixed: true
-         vuln-type: 'os,library'
-         severity: 'CRITICAL,HIGH'
+      - name: Run Trivy FS Scan
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'table'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+
+  sonar-frontend:
+    runs-on: Agent-1
+    needs: trivy_fs_scan
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SonarQube Scan (client)
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: client
+          args: >
+            -Dsonar.projectName=myorg_client
+            -Dsonar.projectKey=myorg_client
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}
+
+  sonar-backend:
+    runs-on: Agent-1
+    needs: sonar-frontend
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: SonarQube Scan (api)
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: api
+          args: >
+            -Dsonar.projectName=myorg_api
+            -Dsonar.projectKey=myorg_api
+            -Dsonar.sources=.
+            -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL }}

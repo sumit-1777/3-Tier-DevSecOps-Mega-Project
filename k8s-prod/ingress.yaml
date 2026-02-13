@@ -27,7 +27,7 @@ spec:
                 name: frontend-svc
                 port:
                   number: 80
-    - host: devopssumit.shop
+    - host: www.devopssumit.shop
       http:
         paths:
           - path: /api

@@ -68,7 +68,7 @@ jobs:
         with:
           projectBaseDir: client
           args: >
-            -Dsonar.host.url=http://3.111.187.51:9000
+            -Dsonar.host.url=http://3.110.178.48:9000
             -Dsonar.projectKey=myorg_client
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**
@@ -87,7 +87,7 @@ jobs:
         with:
           projectBaseDir: api
           args: >
-            -Dsonar.host.url=http://3.111.187.51:9000
+            -Dsonar.host.url=http://3.110.178.48:9000
             -Dsonar.projectKey=myorg_api
             -Dsonar.sources=.
             -Dsonar.exclusions=**/node_modules/**,**/dist/**,**/build/**

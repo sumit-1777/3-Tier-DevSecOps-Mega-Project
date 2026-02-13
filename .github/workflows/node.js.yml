@@ -19,7 +19,7 @@ jobs:
         with:
           node-version: '23'
 
-      - name: Frontend compilation
+      - name: Frontend compilation 
         run: |
           cd client
           find . -name "*.js" -exec node --check {} +
